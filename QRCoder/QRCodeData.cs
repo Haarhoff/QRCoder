@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace QRCoder
 {
-    using QRCoder.Framework4._0Methods;
     using System;
     using System.IO;
     using System.IO.Compression;
@@ -21,11 +20,11 @@ namespace QRCoder
             for (var i = 0; i < size; i++)
                 this.ModuleMatrix.Add(new BitArray(size));
         }
-#if NETFRAMEWORK || NETSTANDARD2_0 || NET5_0
+
         public QRCodeData(string pathToRawData, Compression compressMode) : this(File.ReadAllBytes(pathToRawData), compressMode)
         {
         }
-#endif
+        
         public QRCodeData(byte[] rawData, Compression compressMode)
         {
             var bytes = new List<byte>(rawData);
@@ -39,7 +38,7 @@ namespace QRCoder
                     {
                         using (var dstream = new DeflateStream(input, CompressionMode.Decompress))
                         {
-                            Stream4Methods.CopyTo(dstream, output);
+                            dstream.CopyTo(output);
                         }
                         bytes = new List<byte>(output.ToArray());
                     }
@@ -53,7 +52,7 @@ namespace QRCoder
                     {
                         using (var dstream = new GZipStream(input, CompressionMode.Decompress))
                         {
-                            Stream4Methods.CopyTo(dstream, output);
+                            dstream.CopyTo(output);
                         }
                         bytes = new List<byte>(output.ToArray());
                     }

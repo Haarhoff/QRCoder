@@ -1,10 +1,15 @@
-#if NETFRAMEWORK || NETSTANDARD2_0 || NET5_0
 using System;
 using System.Collections;
 using System.Drawing;
 using System.Text;
+using QRCoder.Extensions;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
 using static QRCoder.QRCodeGenerator;
 using static QRCoder.SvgQRCode;
+using Color = SixLabors.ImageSharp.Color;
+using Size = SixLabors.ImageSharp.Size;
 
 namespace QRCoder
 {
@@ -44,7 +49,7 @@ namespace QRCoder
 
         public string GetGraphic(Size viewBox, Color darkColor, Color lightColor, bool drawQuietZones = true, SizingMode sizingMode = SizingMode.WidthHeightAttribute, SvgLogo logo = null)
         {
-            return this.GetGraphic(viewBox, ColorTranslator.ToHtml(Color.FromArgb(darkColor.ToArgb())), ColorTranslator.ToHtml(Color.FromArgb(lightColor.ToArgb())), drawQuietZones, sizingMode, logo);
+            return this.GetGraphic(viewBox, darkColor.ToHtmlHex(), lightColor.ToHtmlHex(), drawQuietZones, sizingMode, logo);
         }
 
         public string GetGraphic(Size viewBox, string darkColorHex, string lightColorHex, bool drawQuietZones = true, SizingMode sizingMode = SizingMode.WidthHeightAttribute, SvgLogo logo = null)
@@ -158,17 +163,16 @@ namespace QRCoder
             /// </summary>
             /// <param name="iconRasterized">Logo to be rendered as Bitmap/rasterized graphic</param>
             /// <param name="iconSizePercent">Degree of percentage coverage of the QR code by the logo</param>
-            public SvgLogo(Bitmap iconRasterized, int iconSizePercent = 15)
+            public SvgLogo(Image iconRasterized, int iconSizePercent = 15)
             {
                 _iconSizePercent = iconSizePercent;
                 using (var ms = new System.IO.MemoryStream())
                 {
-                    using (var bitmap = new Bitmap(iconRasterized))
-                    {
-                        bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                        _logoData = Convert.ToBase64String(ms.GetBuffer(), Base64FormattingOptions.None); 
-                    }
+
+                        iconRasterized.Save(ms, new PngEncoder());
+                    _logoData = Convert.ToBase64String(ms.GetBuffer(), Base64FormattingOptions.None); 
                 }
+                
                 _mediaType = "image/png";
             }
 
@@ -207,5 +211,3 @@ namespace QRCoder
         }
     }
 }
-
-#endif

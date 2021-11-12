@@ -5,9 +5,8 @@ using Shouldly;
 using QRCoderTests.XUnitExtenstions;
 using System.IO;
 using System.Security.Cryptography;
-#if !NETCOREAPP1_1
-using System.Drawing;
-#endif
+using SixLabors.ImageSharp.Formats.Png;
+
 
 namespace QRCoderTests
 {
@@ -15,7 +14,7 @@ namespace QRCoderTests
     public class QRCodeRendererTests
     {
 
-#if !NETCOREAPP1_1
+
         [Fact]
         [Category("QRRenderer/QRCode")]
         public void can_create_standard_qrcode_graphic()
@@ -23,19 +22,18 @@ namespace QRCoderTests
             var gen = new QRCodeGenerator();
             var data = gen.CreateQrCode("This is a quick test! 123#?", QRCodeGenerator.ECCLevel.H);
             var bmp = new QRCode(data).GetGraphic(10);
-
-            var ms = new MemoryStream();
-            bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Gif);
+            
+            using var ms = new MemoryStream();
+            bmp.Save(ms, new PngEncoder());
             var imgBytes = ms.ToArray();
-            var md5 = new MD5CryptoServiceProvider();
+            var md5 = MD5.Create();
             var hash = md5.ComputeHash(imgBytes);
             var result = BitConverter.ToString(hash).Replace("-", "").ToLower();
-            ms.Dispose();
 
-            result.ShouldBe("a76c8a72e95df3368717663c6be41b3e");
+            result.ShouldBe("c0f8af4256eddc7e566983e539cce389");
         }
-#endif 
 
+/*
 
 #if !NETCOREAPP1_1 && !NETCOREAPP2_0
 
@@ -57,7 +55,7 @@ namespace QRCoderTests
             var gen = new QRCodeGenerator();
             var data = gen.CreateQrCode("This is a quick test! 123#?", QRCodeGenerator.ECCLevel.H);
 
-            var bmp = new QRCode(data).GetGraphic(10, Color.Black, Color.Transparent, icon: (Bitmap)Image.FromFile(GetAssemblyPath() + "\\assets\\noun_software engineer_2909346.png"));
+            var bmp = new QRCode(data).GetGraphic(10, Color.Black, Color.Transparent, icon: Image.Load(GetAssemblyPath() + "\\assets\\noun_software engineer_2909346.png"));
             //Used logo is licensed under public domain. Ref.: https://thenounproject.com/Iconathon1/collection/redefining-women/?i=2909346
 
             var imgBytes = PixelsToAveragedByteArray(bmp);
@@ -75,7 +73,7 @@ namespace QRCoderTests
             //Create QR code
             var gen = new QRCodeGenerator();
             var data = gen.CreateQrCode("This is a quick test! 123#?", QRCodeGenerator.ECCLevel.H);
-            var bmp = new QRCode(data).GetGraphic(10, Color.Black, Color.White, icon: (Bitmap)Bitmap.FromFile(GetAssemblyPath() + "\\assets\\noun_software engineer_2909346.png"));
+            var bmp = new QRCode(data).GetGraphic(10, Color.Black, Color.White, icon: Image.Load(GetAssemblyPath() + "\\assets\\noun_software engineer_2909346.png"));
             //Used logo is licensed under public domain. Ref.: https://thenounproject.com/Iconathon1/collection/redefining-women/?i=2909346
 
             var imgBytes = PixelsToAveragedByteArray(bmp);
@@ -87,12 +85,11 @@ namespace QRCoderTests
         }
 
 
-        private static byte[] PixelsToAveragedByteArray(Bitmap bmp)
+        private static byte[] PixelsToAveragedByteArray(Image bmp)
         {
             //Re-color
-            var bmpTmp = new Bitmap(bmp.Width, bmp.Height, System.Drawing.Imaging.PixelFormat.Format8bppIndexed);
-            using (var gr = Graphics.FromImage(bmp))
-                gr.DrawImage(bmp, new Rectangle(0, 0, bmp.Width, bmp.Height));
+            var bmpTmp = new Image<L8>(bmp.Width, bmp.Height);
+            bmpTmp.Mutate(x => x.DrawImage(bmp, new Point());
             
             //Downscale
             var bmpSmall = new Bitmap(bmpTmp, new Size(16, 16));
@@ -108,6 +105,6 @@ namespace QRCoderTests
             return bytes.ToArray();
         }
 
-#endif
+#endif */
     }
 }

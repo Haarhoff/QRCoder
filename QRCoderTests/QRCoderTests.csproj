@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net35;net452;netcoreapp1.1;netcoreapp2.0;net5.0;net5.0-windows</TargetFrameworks>
 		<UseWindowsForms Condition="'$(TargetFramework)' == 'net5.0-windows'">true</UseWindowsForms>
 		<UseWPF Condition="'$(TargetFramework)' == 'net5.0-windows'">true</UseWPF>
 		<DefineConstants Condition="'$(TargetFramework)' == 'net5.0-windows'">$(DefineConstants);NET5_0_WINDOWS</DefineConstants>
@@ -8,24 +7,16 @@
 		<IsTestProject>true</IsTestProject>
 		<CheckEolTargetFramework>false</CheckEolTargetFramework>
 		<DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+		<TargetFramework>net6.0</TargetFramework>
 	</PropertyGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' or '$(TargetFramework)' == 'net5.0-windows' ">
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
-		<PackageReference Include="xunit" Version="2.4.1" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
-		<PackageReference Include="shouldly" Version="4.0.3" />
 	</ItemGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net35' or '$(TargetFramework)' == 'net452' ">
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
-		<PackageReference Include="xunit" Version="1.9.2" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.0.1" />
-		<PackageReference Include="shouldly" Version="2.8.3" />
 	</ItemGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.1' or '$(TargetFramework)' == 'netcoreapp2.0'">
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
-		<PackageReference Include="xunit" Version="2.4.1" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />		
-		<PackageReference Include="shouldly" Version="3.0.2" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="coverlet.collector" Version="3.0.3">
@@ -36,6 +27,9 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+		<PackageReference Include="Shouldly" Version="4.0.3" />
+		<PackageReference Include="xunit" Version="2.4.1" />
 		<ProjectReference Include="..\QRCoder\QRCoder.csproj" />
 	</ItemGroup>
 	<ItemGroup>

@@ -1,5 +1,4 @@
-﻿#if NETFRAMEWORK || NETSTANDARD2_0 || NET5_0
-using System;
+﻿using System;
 using System.Drawing;
 using static QRCoder.QRCodeGenerator;
 
@@ -150,5 +149,3 @@ showpage
         }
     }
 }
-
-#endif

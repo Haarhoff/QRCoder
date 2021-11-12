@@ -5,9 +5,8 @@ using Shouldly;
 using QRCoderTests.XUnitExtenstions;
 using System.IO;
 using System.Security.Cryptography;
-#if !NETCOREAPP1_1
-using System.Drawing;
-#endif
+using SixLabors.ImageSharp;
+
 
 namespace QRCoderTests
 {
@@ -15,16 +14,10 @@ namespace QRCoderTests
     public class SvgQRCodeRendererTests
     {
 
-#if !NETCOREAPP1_1 && !NETCOREAPP2_0
-
         private string GetAssemblyPath()
         {
-            return
-#if NET5_0
-                AppDomain.CurrentDomain.BaseDirectory;
-#else
-                Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).Replace("file:\\", "");
-#endif
+            return AppDomain.CurrentDomain.BaseDirectory;
+
         }
 
         [Fact]
@@ -36,11 +29,11 @@ namespace QRCoderTests
             var data = gen.CreateQrCode("This is a quick test! 123#?", QRCodeGenerator.ECCLevel.H);
             var svg = new SvgQRCode(data).GetGraphic(10, Color.Red, Color.White);
 
-            var md5 = new MD5CryptoServiceProvider();
+            var md5 = MD5.Create();
             var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(svg));
             var result = BitConverter.ToString(hash).Replace("-", "").ToLower();
-
-            result.ShouldBe("0ad8bc75675d04ba0caff51c7a89992c");
+            
+            result.ShouldBe("879b36fdcb31c4b9e631ce427251b1dc");
         }
 
         [Fact]
@@ -51,12 +44,12 @@ namespace QRCoderTests
             var gen = new QRCodeGenerator();
             var data = gen.CreateQrCode("This is a quick test! 123#?", QRCodeGenerator.ECCLevel.H);
             var svg = new SvgQRCode(data).GetGraphic(10, Color.Red, Color.White, false);
-
+            File.WriteAllText("/Users/hh_21/Desktop/test2.svg", svg);
             var md5 = new MD5CryptoServiceProvider();
             var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(svg));
             var result = BitConverter.ToString(hash).Replace("-", "").ToLower();
 
-            result.ShouldBe("24392f47d4c1c2c5097bd6b3f8eefccc");
+            result.ShouldBe("aa1f74ebca35ffebad0c60a1297792e4");
         }
 
         [Fact]
@@ -68,16 +61,16 @@ namespace QRCoderTests
             var data = gen.CreateQrCode("This is a quick test! 123#?", QRCodeGenerator.ECCLevel.H);
 
             //Used logo is licensed under public domain. Ref.: https://thenounproject.com/Iconathon1/collection/redefining-women/?i=2909346
-            var logoBitmap = (Bitmap)Bitmap.FromFile(GetAssemblyPath() + "\\assets\\noun_software engineer_2909346.png");
+            var logoBitmap = Image.Load(GetAssemblyPath() + "assets/noun_software engineer_2909346.png");
             var logoObj = new SvgQRCode.SvgLogo(logoBitmap, 15);
 
             var svg = new SvgQRCode(data).GetGraphic(10, Color.DarkGray, Color.White, logo: logoObj);
-
-            var md5 = new MD5CryptoServiceProvider();
+            
+            var md5 = MD5.Create();
             var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(svg));
             var result = BitConverter.ToString(hash).Replace("-", "").ToLower();
 
-            result.ShouldBe("4ff45872787f321524cc4d071239c25e");
+            result.ShouldBe("d91bf0aed6ac33d7aacc7f8a55161d5d");
         }
 
         [Fact]
@@ -89,18 +82,17 @@ namespace QRCoderTests
             var data = gen.CreateQrCode("This is a quick test! 123#?", QRCodeGenerator.ECCLevel.H);
 
             //Used logo is licensed under public domain. Ref.: https://thenounproject.com/Iconathon1/collection/redefining-women/?i=2909361
-            var logoSvg = File.ReadAllText(GetAssemblyPath() + "\\assets\\noun_Scientist_2909361.svg");
+            var logoSvg = File.ReadAllText(GetAssemblyPath() + "assets/noun_Scientist_2909361.svg");
             var logoObj = new SvgQRCode.SvgLogo(logoSvg, 30);
 
             var svg = new SvgQRCode(data).GetGraphic(10, Color.DarkGray, Color.White, logo: logoObj);
-
-            var md5 = new MD5CryptoServiceProvider();
+            
+            var md5 = MD5.Create();
             var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(svg));
             var result = BitConverter.ToString(hash).Replace("-", "").ToLower();
 
-            result.ShouldBe("b4ded3964e2e640b6b6c74d1c89d71fa");
+            result.ShouldBe("8deda066b9b703c2c3fccce2df2a909e");
         }
-#endif
     }
 }
 

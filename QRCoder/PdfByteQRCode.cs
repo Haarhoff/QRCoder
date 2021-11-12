@@ -1,13 +1,14 @@
-﻿#if NETFRAMEWORK || NETSTANDARD2_0 || NET5_0
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using SixLabors.ImageSharp;
 using static QRCoder.QRCodeGenerator;
 
 /* This renderer is inspired by RemusVasii: https://github.com/codebude/QRCoder/issues/223 */
+/*
 namespace QRCoder
 {
 
@@ -73,7 +74,7 @@ namespace QRCoder
             using (var msPng = new MemoryStream())
             {
                 msPng.Write(pngArray, 0, pngArray.Length);
-                var img = System.Drawing.Image.FromStream(msPng);
+                var img = Image.FromStream(msPng);
                 using (var msJpeg = new MemoryStream())
                 {
                     // Create JPEG with specified quality
@@ -233,5 +234,4 @@ namespace QRCoder
 
         }
     }
-}
-#endif
+} */

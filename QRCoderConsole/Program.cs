@@ -7,6 +7,11 @@ using System.Reflection;
 using QRCoder;
 using System.Text;
 using System.Windows.Markup;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Bmp;
+using SixLabors.ImageSharp.Formats.Gif;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Png;
 
 namespace QRCoderConsole
 {
@@ -147,9 +152,10 @@ namespace QRCoderConsole
                             using (var code = new QRCode(data))
                             {
                                 using (var bitmap = code.GetGraphic(pixelsPerModule, foreground, background, true))
+                                    using(var fs = File.Create(outputFileName))
                                 {
                                     var actualFormat = new OptionSetter().GetImageFormat(imgFormat.ToString());
-                                    bitmap.Save(outputFileName, actualFormat);
+                                    bitmap.Save(fs, actualFormat);
                                 }
                             }
                             break;
@@ -164,19 +170,7 @@ namespace QRCoderConsole
                                 }
                             }
                             break;
-#if !NET5_0 && !NET5_0_WINDOWS
-                        case SupportedImageFormat.Xaml:
-                            using (var code = new XamlQRCode(data))
-                            {
-                                var test = XamlWriter.Save(code.GetGraphic(pixelsPerModule, foreground, background, true));
-                                using (var f = File.CreateText(outputFileName))
-                                {
-                                    f.Write(test);
-                                    f.Flush();
-                                }
-                            }
-                            break;
-#endif
+
                         case SupportedImageFormat.Ps:
                         case SupportedImageFormat.Eps:
                             using (var code = new PostscriptQRCode(data))
@@ -248,23 +242,21 @@ namespace QRCoderConsole
             return level;
         }
 
-        public ImageFormat GetImageFormat(string value)
+        public IImageEncoder GetImageFormat(string value)
         {
             switch (value.ToLower())
             {
                 case "jpg":
-                    return ImageFormat.Jpeg;
                 case "jpeg":
-                    return ImageFormat.Jpeg;
+                    return new JpegEncoder();
                 case "gif":
-                    return ImageFormat.Gif;
+                    return new GifEncoder();
                 case "bmp":
-                    return ImageFormat.Bmp;
+                    return new BmpEncoder();
                 case "tiff":
-                    return ImageFormat.Tiff;
-                case "png":
+                    throw new InvalidOperationException("Tiff is not supported");
                 default:
-                    return ImageFormat.Png;
+                    return new PngEncoder();
             }
         }
     }
