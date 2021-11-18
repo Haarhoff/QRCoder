@@ -153,12 +153,12 @@ public class QRCodeData : IDisposable
         return rawData;
     }
 
-#if NETFRAMEWORK || NETSTANDARD2_0 || NET5_0
+
         public void SaveRawData(string filePath, Compression compressMode)
         {
             File.WriteAllBytes(filePath, GetRawData(compressMode));
         }
-#endif
+
 
     public int Version { get; private set; }
 

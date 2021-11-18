@@ -1104,11 +1104,7 @@ public class QRCodeGenerator : IDisposable
         var utf8 = Encoding.UTF8;
         var utfBytes = utf8.GetBytes(value);
         var isoBytes = Encoding.Convert(utf8, iso, utfBytes);
-#if NETFRAMEWORK || NETSTANDARD2_0 || NET5_0
-            return iso.GetString(isoBytes);
-#else
-        return iso.GetString(isoBytes, 0, isoBytes.Length);
-#endif
+        return iso.GetString(isoBytes);
     }
 
     private static string PlainTextToBinaryByte(string plainText, EciMode eciMode, bool utf8BOM, bool forceUtf8)

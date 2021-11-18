@@ -4,9 +4,6 @@ using System.Linq;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-#if NETSTANDARD1_3
-using System.Reflection;
-#endif
 
 namespace QRCoder
 {
@@ -2496,15 +2493,8 @@ namespace QRCoder
                 var cp = characterSet.ToString().Replace("_", "-");
                 var bytes = ToBytes();
 
-#if !NET35 && !NET40 && !NETSTANDARD1_3_OR_GREATER
-                System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-#endif
-#if NETSTANDARD1_3
-                // TODO: Fix for NETSTANDARD1.1                
-                return Encoding.GetEncoding(cp).GetString(bytes,0,bytes.Length);
-#else
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 return Encoding.GetEncoding(cp).GetString(bytes);
-#endif
             }
 
             /// <summary>
@@ -2533,9 +2523,7 @@ namespace QRCoder
                 ret += separator;
 
                 //Encode return string as byte[] with correct CharacterSet
-#if !NET35_OR_GREATER
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-#endif
                 var cp = this.characterSet.ToString().Replace("_", "-");
                 var bytesOut = Encoding.Convert(Encoding.UTF8, Encoding.GetEncoding(cp), Encoding.UTF8.GetBytes(ret));
                 if (bytesOut.Length > 300)
@@ -2571,16 +2559,6 @@ namespace QRCoder
             /// <returns>A List of strings</returns>
             private List<string> GetOptionalFieldsAsList()
             {
-#if NETSTANDARD1_3
-                return oFields.GetType().GetRuntimeProperties()
-                        .Where(field => field.GetValue(oFields) != null)
-                        .Select(field => {
-                            var objValue = field.GetValue(oFields, null);
-                            var value = field.PropertyType.Equals(typeof(DateTime?)) ? ((DateTime)objValue).ToString("dd.MM.yyyy") : objValue.ToString();
-                            return $"{field.Name}={value}";
-                        })
-                        .ToList();
-#else
                 return oFields.GetType().GetProperties()
                         .Where(field => field.GetValue(oFields, null) != null)
                         .Select(field => {
@@ -2589,7 +2567,6 @@ namespace QRCoder
                             return $"{field.Name}={value}";                            
                          })
                         .ToList();
-#endif
             }
 
 
@@ -2599,16 +2576,6 @@ namespace QRCoder
             /// <returns>A List of strings</returns>
             private List<string> GetMandatoryFieldsAsList()
             {
-#if NETSTANDARD1_3
-                return mFields.GetType().GetRuntimeFields()
-                        .Where(field => field.GetValue(mFields) != null)
-                        .Select(field => {
-                            var objValue = field.GetValue(mFields);
-                            var value = field.FieldType.Equals(typeof(DateTime?)) ? ((DateTime)objValue).ToString("dd.MM.yyyy") : objValue.ToString();
-                            return $"{field.Name}={value}";
-                        })
-                        .ToList();
-#else
                 return mFields.GetType().GetFields()
                         .Where(field => field.GetValue(mFields) != null)
                         .Select(field => {
@@ -2617,7 +2584,6 @@ namespace QRCoder
                             return $"{field.Name}={value}";                            
                          })
                         .ToList();
-#endif
             }
 
             /// <summary>
@@ -3091,11 +3057,7 @@ namespace QRCoder
             var utf8 = Encoding.UTF8;
             var utfBytes = utf8.GetBytes(message);
             var isoBytes = Encoding.Convert(utf8, iso, utfBytes);
-#if NET40
-            return iso.GetString(isoBytes);
-#else
-                return iso.GetString(isoBytes,0, isoBytes.Length);
-#endif
+            return iso.GetString(isoBytes,0, isoBytes.Length);
         }
 
         private static string EscapeInput(string inp, bool simple = false)
