@@ -4,18 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QRCoderConsole
+namespace QRCoderConsole;
+
+public enum SupportedImageFormat
 {
-    public enum SupportedImageFormat
-    {
-        Png,
-        Jpg,
-        Gif,
-        Bmp,
-        Tiff,
-        Svg,
-        Xaml,
-        Ps,
-        Eps,
-    }
+    Png,
+    Jpg,
+    Gif,
+    Bmp,
+    Tiff,
+    Svg,
+    Xaml,
+    Ps,
+    Eps,
 }
